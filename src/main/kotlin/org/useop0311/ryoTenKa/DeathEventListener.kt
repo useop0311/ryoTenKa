@@ -21,6 +21,7 @@ import org.useop0311.ryoTenKa.RyoTenKa.Companion.PVPTime
 class DeathEventListener : Listener {
 
     val deathCounter: HashMap<Player, Int> = HashMap()
+    val isDeathTen : HashMap<Player, Boolean>  HashMap()
 
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
@@ -83,8 +84,10 @@ class DeathEventListener : Listener {
         val scoreboard = player.server.scoreboardManager.mainScoreboard
 
         if ((deathCounter[player] ?: 0) > 10) {
-            // 디버프 구문 추가해야함
-            // 잠정보류
+            // 누적 10데스 시 중앙 지역 진입 불가
+            // 패널티 해제 방법: 다이아몬드블럭 중앙지역에 기부
+
+            isDeathTen[player] = true
         }
     }
 }
