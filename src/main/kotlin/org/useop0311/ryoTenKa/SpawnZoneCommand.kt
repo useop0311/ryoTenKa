@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scheduler.BukkitRunnable
 import org.useop0311.ryoTenKa.RyoTenKa.Companion.deathCounter
 import org.useop0311.ryoTenKa.RyoTenKa.Companion.doklib
 import java.util.TimerTask
