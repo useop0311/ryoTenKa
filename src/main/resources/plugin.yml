@@ -7,3 +7,9 @@ commands:
   start:
     description: '게임 시작'
     usage: /start
+  escape:
+    description: '사망 횟수 5회 차감'
+    usage: /escape
+  doklib:
+    description: '독립하기'
+    usage: /doklib

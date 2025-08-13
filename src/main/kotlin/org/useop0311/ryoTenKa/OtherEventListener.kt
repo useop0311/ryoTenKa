@@ -1,16 +1,21 @@
 package org.useop0311.ryoTenKa
 
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes.world
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerMoveEvent
 import org.useop0311.ryoTenKa.RyoTenKa.Companion.PVPTime
+import org.useop0311.ryoTenKa.RyoTenKa.Companion.deathCounter
+import org.useop0311.ryoTenKa.RyoTenKa.Companion.doklib
 
 class OtherEventListener : Listener {
     @EventHandler
@@ -54,8 +59,9 @@ class OtherEventListener : Listener {
             val victimLocation = victim.location
             val x = victimLocation.x
             val z = victimLocation.z
+            val world = victimLocation.world.environment
 
-            if (x >= -250 && x <= 250 && z >= -250 && z <= 250) {
+            if (x >= -250 && x <= 250 && z >= -250 && z <= 250 && world == World.Environment.NORMAL) {
                 // 4. 보호 구역 안이라면 공격을 취소!
                 event.isCancelled = true
 
@@ -63,6 +69,35 @@ class OtherEventListener : Listener {
                 damager.sendMessage(
                     Component.text("지금은 스폰 근처에서 PVP가 불가능합니다.", NamedTextColor.GOLD)
                 )
+            }
+        }
+    }
+
+    @EventHandler
+    fun onPlayerMoveToZone(event: PlayerMoveEvent) {
+        val player = event.player
+
+        if (deathCounter.contains(player.uniqueId)) {
+            if (deathCounter[player.uniqueId]!! >= 10) {// player의 위치가 -250 ~ 250 인 경우
+                val x = player.x
+                val z = player.z
+                val world = player.world.environment
+
+                if (x >= -250 && x <= 250 && z >= -250 && z <= 250 && world == World.Environment.NORMAL) {
+                    player.damage(3.0)
+                    player.sendMessage(Component.text("당장 나오세요! 죽은 횟수가 10회가 넘어 스폰구역 진입이 불가능합니다.\n/escape 명령어를 이용해서 제한을 해제하세요.", NamedTextColor.RED))
+                }
+            }
+        }
+
+        if (doklib[player.uniqueId] != null) {
+            val x = player.x
+            val z = player.z
+            val world = player.world.environment
+
+            if (x < -100 || x > 100 || z < -100 || z > 100 && world == World.Environment.NORMAL) {
+                player.damage(3.0)
+                player.sendMessage(Component.text("당장 나오세요! 독립 과정 진행중에는 밖으로 나갈 수 없습니다.", NamedTextColor.RED))
             }
         }
     }

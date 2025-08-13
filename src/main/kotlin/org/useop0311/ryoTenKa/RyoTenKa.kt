@@ -1,14 +1,19 @@
 package org.useop0311.ryoTenKa
 
+import it.unimi.dsi.fastutil.Hash
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.scoreboard.Team
+import java.io.*
 import java.time.LocalTime
+import java.util.*
+
 
 class RyoTenKa : JavaPlugin() {
     companion object {
@@ -16,13 +21,27 @@ class RyoTenKa : JavaPlugin() {
         var bigTeam : Team? = null
 
         var PVPTime : Boolean = false
+
+        val deathCounter: HashMap<UUID, Int> = HashMap()
+
+        var doklib : HashMap<UUID, Long> = HashMap()
+        lateinit var instance: RyoTenKa
     }
+
+    private val deathF = File(dataFolder, "/deathData.txt")
 
     override fun onEnable() {
         // Plugin startup logic
+        instance = this
+
+        // dataFile
+        makeFile(deathF);
+        fileToMap(deathF, deathCounter)
 
         // Commands
         getCommand("start")?.setExecutor(StartCommand())
+        getCommand("escape")?.setExecutor(SpawnZoneCommand())
+        getCommand("doklib")?.setExecutor(SpawnZoneCommand())
 
         // EventHandle
         server.pluginManager.registerEvents(DeathEventListener(), this)
@@ -41,6 +60,7 @@ class RyoTenKa : JavaPlugin() {
 //        logger.info("조합법 정리 완료!")
 
         // Scheduler
+        mapToFileSchedule(deathF, deathCounter)
         spawnPVPSchedule()
         bigTeamSchedule()
 
@@ -49,6 +69,7 @@ class RyoTenKa : JavaPlugin() {
 
     override fun onDisable() {
         // Plugin shutdown logic
+        mapToFile(deathF, deathCounter)
         logger.info("RYO TENKA 비활성화됨")
     }
 
@@ -143,7 +164,7 @@ class RyoTenKa : JavaPlugin() {
 
         // pos
 
-        val posPeriod = 600L // 30분 = 30분 * 60초 * 20틱 = 36000틱
+        val posPeriod = 36000L // 30분 = 30분 * 60초 * 20틱 = 36000틱
         server.scheduler.runTaskTimer(this, Runnable {
             if (bigTeamOccur) {
                 server.broadcast(
@@ -176,5 +197,55 @@ class RyoTenKa : JavaPlugin() {
                 }
             }
         }, delay, posPeriod)
+    }
+
+    fun makeFile(f: File) {
+        if (!f.exists() || !f.isFile()) {
+            try {
+                if (!f.parentFile.exists()) {
+                    f.parentFile.mkdirs()
+                }
+                f.createNewFile()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    @Suppress("deprecation")
+    fun mapToFileSchedule(f: File?, map: HashMap<UUID, Int>) {
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, {
+            f?.let { mapToFile(it, map) }
+        }, 1200L, 1200L)
+    }
+
+    fun fileToMap(f: File, map: HashMap<UUID, Int>) {
+        try {
+            val reader = BufferedReader(FileReader(f))
+            var fileLine: String? = null
+            while ((reader.readLine().also { fileLine = it }) != null) {
+                val uuid =
+                    UUID.fromString(fileLine!!.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[0])
+                val str = fileLine.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
+
+                map[uuid] = str.toInt()
+            }
+        } catch (e3: FileNotFoundException) {
+            e3.printStackTrace()
+        } catch (e4: IOException) {
+            e4.printStackTrace()
+        }
+    }
+
+    fun mapToFile(f: File, map: HashMap<UUID, Int>) {
+        try {
+            val writer: FileWriter = FileWriter(f, false)
+            for (uuid in map.keys) {
+                writer.write(uuid.toString() + "|" + map.get(uuid) + "\n")
+            }
+            writer.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 }

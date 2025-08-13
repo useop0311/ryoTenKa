@@ -2,26 +2,16 @@ package org.useop0311.ryoTenKa
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Material
-import org.bukkit.Sound
-import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
-import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.PlayerDeathEvent
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerRespawnEvent
-import org.bukkit.potion.PotionEffect
-import org.bukkit.potion.PotionEffectType
-import org.useop0311.ryoTenKa.RyoTenKa.Companion.bigTeamOccur
-import org.useop0311.ryoTenKa.RyoTenKa.Companion.bigTeam
-import org.useop0311.ryoTenKa.RyoTenKa.Companion.PVPTime
+import org.useop0311.ryoTenKa.RyoTenKa.Companion.deathCounter
+import javax.inject.Named
+import javax.naming.Name
 
 class DeathEventListener : Listener {
 
-    val deathCounter: HashMap<Player, Int> = HashMap()
-    val isDeathTen : HashMap<Player, Boolean>  HashMap()
 
     @EventHandler
     fun onDeath(event: PlayerDeathEvent) {
@@ -30,10 +20,10 @@ class DeathEventListener : Listener {
         // 죽은 플레이어
         val victim = event.player
         deathCounter.let {
-            if (deathCounter.containsKey(victim)) {
-                deathCounter[victim] = deathCounter[victim]!! + 1
+            if (deathCounter.containsKey(victim.uniqueId)) {
+                deathCounter[victim.uniqueId] = deathCounter[victim.uniqueId]!! + 1
             } else {
-                deathCounter[victim] = 1
+                deathCounter[victim.uniqueId] = 1
             }
         }
 
@@ -66,7 +56,7 @@ class DeathEventListener : Listener {
 
             //move player's team
             killerTeam?.addEntries(victimName)
-            victim.sendMessage(
+            victim.server.broadcast(
                 Component.text(victimName, NamedTextColor.AQUA)
                     .append(Component.text("님은 지금부터 ", NamedTextColor.GRAY))
                     .append(Component.text(killerTeamName ?: "알수없음", NamedTextColor.RED))
@@ -83,11 +73,18 @@ class DeathEventListener : Listener {
         val player = event.player
         val scoreboard = player.server.scoreboardManager.mainScoreboard
 
-        if ((deathCounter[player] ?: 0) > 10) {
+        player.sendMessage(
+            Component.text("누적 사망 횟수는 ", NamedTextColor.WHITE)
+                .append(Component.text(deathCounter[player.uniqueId].toString(), NamedTextColor.RED))
+                .append(Component.text("회 입니다.", NamedTextColor.WHITE))
+        )
+
+        if ((deathCounter[player.uniqueId] ?: 0) == 10) {
             // 누적 10데스 시 중앙 지역 진입 불가
             // 패널티 해제 방법: 다이아몬드블럭 중앙지역에 기부
 
-            isDeathTen[player] = true
+            player.sendMessage(Component.text("누적 사망 횟수 10회를 달성하여 스폰 구역 진입이 금지되었습니다.",NamedTextColor.RED))
+            player.sendMessage(Component.text("다이아 블럭 1개를 들고 /escape 명령어를 사용하여 사망 횟수를 차감하십시오. ",NamedTextColor.RED))
         }
     }
 }
