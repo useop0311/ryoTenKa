@@ -7,6 +7,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerRespawnEvent
 import org.useop0311.ryoTenKa.RyoTenKa.Companion.deathCounter
+import org.useop0311.ryoTenKa.RyoTenKa.Companion.doklib
 import javax.inject.Named
 import javax.naming.Name
 
@@ -65,6 +66,17 @@ class DeathEventListener : Listener {
 
             event.deathMessage(null)
         }
+
+        // 죽은 플레이어가 독립중
+        if (doklib[victim.uniqueId] != null) {
+            victim.server.broadcast(
+                Component.text(victimName, NamedTextColor.AQUA)
+                    .append(Component.text("님이 독립에 실패하였습니다!", NamedTextColor.YELLOW))
+            )
+
+            doklib.remove(victim.uniqueId)
+        }
+
         return
     }
 

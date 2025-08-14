@@ -48,6 +48,7 @@ class RyoTenKa : JavaPlugin() {
         server.pluginManager.registerEvents(OtherEventListener(), this)
 
         // Recipe
+        // TODO : Recipe는 StartCommand에서 삭제
         val iterator = server.recipeIterator()
         while (iterator.hasNext()) {
             val recipe = iterator.next()
@@ -199,6 +200,7 @@ class RyoTenKa : JavaPlugin() {
         }, delay, posPeriod)
     }
 
+    // TODO : file관련 fun 다른 class로 이동
     fun makeFile(f: File) {
         if (!f.exists() || !f.isFile()) {
             try {

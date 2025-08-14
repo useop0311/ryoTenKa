@@ -62,10 +62,8 @@ class OtherEventListener : Listener {
             val world = victimLocation.world.environment
 
             if (x >= -250 && x <= 250 && z >= -250 && z <= 250 && world == World.Environment.NORMAL) {
-                // 4. 보호 구역 안이라면 공격을 취소!
                 event.isCancelled = true
 
-                // 5. 공격한 플레이어에게 알림 메시지 보내기
                 damager.sendMessage(
                     Component.text("지금은 스폰 근처에서 PVP가 불가능합니다.", NamedTextColor.GOLD)
                 )
@@ -78,7 +76,7 @@ class OtherEventListener : Listener {
         val player = event.player
 
         if (deathCounter.contains(player.uniqueId)) {
-            if (deathCounter[player.uniqueId]!! >= 10) {// player의 위치가 -250 ~ 250 인 경우
+            if (deathCounter[player.uniqueId]!! >= 10) {
                 val x = player.x
                 val z = player.z
                 val world = player.world.environment
@@ -97,7 +95,7 @@ class OtherEventListener : Listener {
 
             if (x < -100 || x > 100 || z < -100 || z > 100 && world == World.Environment.NORMAL) {
                 player.damage(3.0)
-                player.sendMessage(Component.text("당장 나오세요! 독립 과정 진행중에는 밖으로 나갈 수 없습니다.", NamedTextColor.RED))
+                player.sendMessage(Component.text("당장 들어오세요! 독립 과정 진행중에는 밖으로 나갈 수 없습니다.", NamedTextColor.RED))
             }
         }
     }

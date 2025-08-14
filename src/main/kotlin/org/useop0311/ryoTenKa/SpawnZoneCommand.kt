@@ -186,8 +186,9 @@ class DoklibTimerTask(private val plugin: JavaPlugin, val player : Player) : Buk
 
             doklib[player.uniqueId] = doklib[player.uniqueId]!! - 1
         } else {
-            player.server.broadcast(Component.text("오류 발생"))
+            // player.server.broadcast(Component.text("오류 발생"))
             this.cancel()
+            return
         }
     }
 }
