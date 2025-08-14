@@ -2,7 +2,7 @@ name: ryoTenKa
 version: '1.0-SNAPSHOT'
 main: org.useop0311.ryoTenKa.RyoTenKa
 api-version: '1.21'
-description: Add Super Power Skills
+description: Add Expansion Game
 commands:
   start:
     description: '게임 시작'
