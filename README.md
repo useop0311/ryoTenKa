@@ -1,5 +1,9 @@
+[English](README.me) / [Korean](README_ko.md)
 # Expansion Game
 Plugin for Expansion Game within Minecraft
+
+# Language
+This plugin support only Korean.
 
 # Rules
 ■ Progress Period
