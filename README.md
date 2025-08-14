@@ -1,4 +1,4 @@
-[English](README.me) / [Korean](README_ko.md)
+[English](README.md) / [Korean](README_ko.md)
 # Expansion Game
 Plugin for Expansion Game within Minecraft
 
