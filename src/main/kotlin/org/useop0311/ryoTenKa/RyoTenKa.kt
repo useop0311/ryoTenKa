@@ -1,10 +1,8 @@
 package org.useop0311.ryoTenKa
 
-import it.unimi.dsi.fastutil.Hash
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.potion.PotionEffect
@@ -41,18 +39,15 @@ class RyoTenKa : JavaPlugin() {
         fileToMap(deathF, deathCounter)
 
         // Commands
-        getCommand("start")?.setExecutor(StartCommand())
-        getCommand("init_settings")?.setExecutor(StartCommand())
+        getCommand("start_game")?.setExecutor(SettingCommand())
+        getCommand("init_game")?.setExecutor(SettingCommand())
+        getCommand("add_new_team")?.setExecutor(SettingCommand())
         getCommand("escape")?.setExecutor(SpawnZoneCommand())
         getCommand("doklib")?.setExecutor(SpawnZoneCommand())
 
         // EventHandle
         server.pluginManager.registerEvents(DeathEventListener(), this)
         server.pluginManager.registerEvents(OtherEventListener(), this)
-
-        // Recipe
-        // TODO : Recipe는 StartCommand에서 삭제
-        
 
         // Scheduler
         mapToFileSchedule(deathF, deathCounter)
@@ -66,26 +61,6 @@ class RyoTenKa : JavaPlugin() {
         // Plugin shutdown logic
         mapToFile(deathF, deathCounter)
         logger.info("RYO TENKA 비활성화됨")
-    }
-
-    fun isBed(block : Material) : Boolean {
-        if (block == Material.BLUE_BED
-            || block == Material.RED_BED
-            || block == Material.GRAY_BED
-            || block == Material.BLACK_BED
-            || block == Material.BROWN_BED
-            || block == Material.CYAN_BED
-            || block == Material.GREEN_BED
-            || block == Material.LIGHT_BLUE_BED
-            || block == Material.LIGHT_GRAY_BED
-            || block == Material.LIME_BED
-            || block == Material.MAGENTA_BED
-            || block == Material.ORANGE_BED
-            || block == Material.PURPLE_BED
-            || block == Material.PINK_BED
-            || block == Material.YELLOW_BED
-            || block == Material.WHITE_BED ) return true
-        else return false
     }
 
     fun spawnPVPSchedule() {
@@ -122,10 +97,11 @@ class RyoTenKa : JavaPlugin() {
 //                logger.info("대세력 확인")
                 if (bigTeam!!.entries.count() <= 1){
                     bigTeamOccur = false
+                    val color = NamedTextColor.NAMES.value(bigTeam!!.color.name.lowercase())
 
                     server.broadcast(
                         Component.text("대세력 소멸! 지금부터 ", NamedTextColor.WHITE)
-                            .append(Component.text(bigTeam?.name ?: "알수없음", NamedTextColor.BLUE))
+                            .append(Component.text(bigTeam?.name ?: "알수없음", color))
                             .append(Component.text("팀은 대세력 디버프가 해제됩니다!", NamedTextColor.WHITE))
                     )
 
@@ -144,20 +120,22 @@ class RyoTenKa : JavaPlugin() {
                     if (team.entries.count() >= 2){
                         bigTeamOccur = true
                         bigTeam = team
+                        val color = NamedTextColor.NAMES.value(team.color.name.lowercase())
 
                         server.broadcast(
                             Component.text("대세력 발생! 지금부터 ", NamedTextColor.WHITE)
-                                .append(Component.text(team.name, NamedTextColor.RED))
+                                .append(Component.text(team.name, color))
                                 .append(Component.text("팀은 대세력 디버프를 받게 됩니다!", NamedTextColor.WHITE))
                         )
 
                         break
                     } else if (team.entries.count() == 0){
-                        unusedTeamColor.add(team.color)
+                        val color = NamedTextColor.NAMES.value(team.color.name.lowercase())
+                        color?.let { unusedTeamColor.add(it) }
 
                         server.broadcast(
                             Component.text("팀 소멸! ", NamedTextColor.WHITE)
-                                .append(Component.text(team.name, team.color))
+                                .append(Component.text(team.name, color))
                                 .append(Component.text("팀이 소멸하였습니다!", NamedTextColor.WHITE))
                         )
 

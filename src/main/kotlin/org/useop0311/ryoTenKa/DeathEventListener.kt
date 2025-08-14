@@ -20,6 +20,7 @@ class DeathEventListener : Listener {
 
         // 죽은 플레이어
         val victim = event.player
+        val victimName = victim.name
         deathCounter.putIfAbsent(victim.uniqueId, 1)
         deathCounter[victim.uniqueId] = deathCounter[victim.uniqueId]!! + 1
 
@@ -29,22 +30,33 @@ class DeathEventListener : Listener {
         // killer가 null이 아니고, 플레이어일 때만 실행
         if (killer != null) {
             // it은 여기서 killer 객체를 가리킴
-            val victimName = victim.name
             val victimTeam = scoreboard.getEntryTeam(victimName)
             val victimTeamName = victimTeam?.name
+            lateinit var victimTeamColor: NamedTextColor
+            if (victimTeamName != null) {
+                victimTeamColor = NamedTextColor.NAMES.value(victimTeam.color.name.lowercase())!!
+            } else {
+                victimTeamColor = NamedTextColor.AQUA
+            }
             val killerName = killer.name
             val killerTeam = scoreboard.getEntryTeam(killerName)
             val killerTeamName = killerTeam?.name
+            lateinit var killerTeamColor: NamedTextColor
+            if (killerTeamName != null) {
+                killerTeamColor = NamedTextColor.NAMES.value(killerTeam.color.name.lowercase())!!
+            } else {
+                killerTeamColor = NamedTextColor.RED
+            }
 
 //            if (victimTeam == killerTeam) return
 
             // 서버 전체에 메시지 보내기
             victim.server.broadcast(
-                Component.text(killerTeamName ?: "알수없음", NamedTextColor.RED)
+                Component.text(killerTeamName ?: "알수없음", killerTeamColor)
                     .append(Component.text("팀의 ", NamedTextColor.GRAY))
                     .append(Component.text(killerName, NamedTextColor.RED))
                     .append(Component.text("님이 ", NamedTextColor.GRAY))
-                    .append(Component.text(victimTeamName ?: "알수없음", NamedTextColor.AQUA))
+                    .append(Component.text(victimTeamName ?: "알수없음", victimTeamColor))
                     .append(Component.text("팀의 ", NamedTextColor.GRAY))
                     .append(Component.text(victimName, NamedTextColor.AQUA))
                     .append(Component.text(" 님을 처치했습니다!", NamedTextColor.GRAY))
@@ -55,7 +67,7 @@ class DeathEventListener : Listener {
             victim.server.broadcast(
                 Component.text(victimName, NamedTextColor.AQUA)
                     .append(Component.text("님은 지금부터 ", NamedTextColor.GRAY))
-                    .append(Component.text(killerTeamName ?: "알수없음", NamedTextColor.RED))
+                    .append(Component.text(killerTeamName ?: "알수없음", killerTeamColor))
                     .append(Component.text("팀입니다!", NamedTextColor.GRAY))
             )
 

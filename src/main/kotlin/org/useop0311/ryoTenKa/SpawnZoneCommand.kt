@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.scheduler.BukkitRunnable
 import org.useop0311.ryoTenKa.RyoTenKa.Companion.deathCounter
 import org.useop0311.ryoTenKa.RyoTenKa.Companion.doklib
+import org.useop0311.ryoTenKa.RyoTenKa.Companion.unusedTeamColor
 import java.util.TimerTask
 import kotlin.random.Random
 
@@ -135,27 +136,8 @@ class DoklibTimerTask(private val plugin: JavaPlugin, val player : Player) : Buk
 
                 val team = scoreboard.registerNewTeam(player.name)
 
-                val random = (Math.random()* 16).toInt()
-                var color : NamedTextColor? = null
-                when (random) {
-                    0 -> color = NamedTextColor.RED
-                    1 -> color = NamedTextColor.GOLD
-                    2 -> color = NamedTextColor.YELLOW
-                    3 -> color = NamedTextColor.GREEN
-                    4 -> color = NamedTextColor.DARK_GREEN
-                    5 -> color = NamedTextColor.AQUA
-                    6 -> color = NamedTextColor.DARK_AQUA
-                    7 -> color = NamedTextColor.BLUE
-                    8 -> color = NamedTextColor.DARK_BLUE
-                    9 -> color = NamedTextColor.LIGHT_PURPLE
-                    10 -> color = NamedTextColor.DARK_PURPLE
-                    11 -> color = NamedTextColor.WHITE
-                    12 -> color = NamedTextColor.GRAY
-                    13 -> color = NamedTextColor.DARK_GRAY
-                    14 -> color = NamedTextColor.BLACK
-                    15 -> color = NamedTextColor.DARK_RED
-                    else -> color = NamedTextColor.WHITE
-                }
+                val random = (Math.random()*unusedTeamColor.count()).toInt()
+                val color = unusedTeamColor[random]
 
                 team.color(color)
                 team.addEntry(player.name)

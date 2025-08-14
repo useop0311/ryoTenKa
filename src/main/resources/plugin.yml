@@ -4,12 +4,17 @@ main: org.useop0311.ryoTenKa.RyoTenKa
 api-version: '1.21'
 description: Add Expansion Game
 commands:
-  start:
+  start_game:
     description: '게임 시작'
     usage: /start
+  init_game:
+    description: '게임 설정 초기화'
+    usage: /doklib
   escape:
     description: '사망 횟수 5회 차감'
     usage: /escape
   doklib:
     description: '독립하기'
     usage: /doklib
+  add_new_team:
+    description: '팀 추가'
