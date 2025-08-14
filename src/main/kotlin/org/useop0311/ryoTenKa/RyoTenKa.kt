@@ -17,6 +17,8 @@ import java.util.*
 
 class RyoTenKa : JavaPlugin() {
     companion object {
+        var unusedTeamColor = mutableListOf<NamedTextColor>()
+
         var bigTeamOccur : Boolean = false
         var bigTeam : Team? = null
 
@@ -40,6 +42,7 @@ class RyoTenKa : JavaPlugin() {
 
         // Commands
         getCommand("start")?.setExecutor(StartCommand())
+        getCommand("init_settings")?.setExecutor(StartCommand())
         getCommand("escape")?.setExecutor(SpawnZoneCommand())
         getCommand("doklib")?.setExecutor(SpawnZoneCommand())
 
@@ -49,16 +52,7 @@ class RyoTenKa : JavaPlugin() {
 
         // Recipe
         // TODO : Recipe는 StartCommand에서 삭제
-        val iterator = server.recipeIterator()
-        while (iterator.hasNext()) {
-            val recipe = iterator.next()
-
-            if (isBed(recipe?.result?.type!!)) {
-                iterator.remove()
-//                logger.info("침대 조합법을 제거했습니다: ${recipe.result.type.name}")
-            }
-        }
-//        logger.info("조합법 정리 완료!")
+        
 
         // Scheduler
         mapToFileSchedule(deathF, deathCounter)
@@ -158,6 +152,16 @@ class RyoTenKa : JavaPlugin() {
                         )
 
                         break
+                    } else if (team.entries.count() == 0){
+                        unusedTeamColor.add(team.color)
+
+                        server.broadcast(
+                            Component.text("팀 소멸! ", NamedTextColor.WHITE)
+                                .append(Component.text(team.name, team.color))
+                                .append(Component.text("팀이 소멸하였습니다!", NamedTextColor.WHITE))
+                        )
+
+                        team.unregister()
                     }
                 }
             }

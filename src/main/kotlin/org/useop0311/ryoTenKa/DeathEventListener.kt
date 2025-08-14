@@ -20,13 +20,8 @@ class DeathEventListener : Listener {
 
         // 죽은 플레이어
         val victim = event.player
-        deathCounter.let {
-            if (deathCounter.containsKey(victim.uniqueId)) {
-                deathCounter[victim.uniqueId] = deathCounter[victim.uniqueId]!! + 1
-            } else {
-                deathCounter[victim.uniqueId] = 1
-            }
-        }
+        deathCounter.putIfAbsent(victim.uniqueId, 1)
+        deathCounter[victim.uniqueId] = deathCounter[victim.uniqueId]!! + 1
 
         // 죽인 플레이어 (null일 수 있음!)
         val killer = victim.killer // victim.getKiller() 와 같음
