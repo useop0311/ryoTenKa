@@ -91,7 +91,7 @@ class SpawnZoneCommand : CommandExecutor {
                         }
 
                         val now = System.currentTimeMillis()
-                        doklib.putIfAbsent(player.uniqueId, 3)
+                        doklib.putIfAbsent(player.uniqueId, 15)
 
                         player.server.broadcast(
                             Component.text(player.name, NamedTextColor.RED)

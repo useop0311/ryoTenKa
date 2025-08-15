@@ -117,7 +117,7 @@ class RyoTenKa : JavaPlugin() {
 //                logger.info(server.scoreboardManager.mainScoreboard.teams.count().toString())
                 for (team in server.scoreboardManager.mainScoreboard.teams){
 //                    logger.info(team.entries.count().toString())
-                    if (team.entries.count() >= 2){
+                    if (team.entries.count() >= 8){
                         bigTeamOccur = true
                         bigTeam = team
                         val color = NamedTextColor.NAMES.value(team.color.name.lowercase())
