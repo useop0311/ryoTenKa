@@ -95,7 +95,7 @@ class RyoTenKa : JavaPlugin() {
 //            logger.info("스케쥴러 내")
             if (bigTeamOccur) {
 //                logger.info("대세력 확인")
-                if (bigTeam!!.entries.count() <= 1){
+                if (bigTeam!!.entries.count() <= 7){
                     bigTeamOccur = false
                     val color = NamedTextColor.NAMES.value(bigTeam!!.color.name.lowercase())
 
