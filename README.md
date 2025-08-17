@@ -65,3 +65,6 @@ If only 1 faction remains, that faction wins.
 (IG, Discord) @naxunse - Planning Expansion Game
 
 (IG, X, Github, Discord) @useop0311 - Developing Expansion Game
+
+# Build
+[![](https://jitpack.io/v/useop0311/ryoTenKa.svg)](https://jitpack.io/#useop0311/ryoTenKa)
