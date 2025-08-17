@@ -2,10 +2,14 @@ package org.useop0311.ryoTenKa
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import org.bukkit.Material
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.PlayerDeathEvent
 import org.bukkit.event.player.PlayerRespawnEvent
+import org.bukkit.inventory.ItemStack
 import org.useop0311.ryoTenKa.RyoTenKa.Companion.deathCounter
 import org.useop0311.ryoTenKa.RyoTenKa.Companion.doklib
 import javax.inject.Named
@@ -50,25 +54,59 @@ class DeathEventListener : Listener {
 
 //            if (victimTeam == killerTeam) return
 
-            // 서버 전체에 메시지 보내기
-            victim.server.broadcast(
-                Component.text(killerTeamName ?: "알수없음", killerTeamColor)
-                    .append(Component.text("팀의 ", NamedTextColor.GRAY))
-                    .append(Component.text(killerName, NamedTextColor.RED))
-                    .append(Component.text("님이 ", NamedTextColor.GRAY))
-                    .append(Component.text(victimTeamName ?: "알수없음", victimTeamColor))
-                    .append(Component.text("팀의 ", NamedTextColor.GRAY))
-                    .append(Component.text(victimName, NamedTextColor.AQUA))
-                    .append(Component.text(" 님을 처치했습니다!", NamedTextColor.GRAY))
-            )
+            val weapon = killer.equipment.itemInMainHand
+
+            if (weapon.type != Material.AIR) {
+                if (weapon.hasItemMeta() && weapon.itemMeta.hasCustomName()) {
+                    // 서버 전체에 메시지 보내기 - 커스텀 무기 이름
+                    victim.server.broadcast(
+                        Component.text(killerTeamName ?: "알수없음", killerTeamColor)
+                            .append(Component.text("팀의 ", NamedTextColor.WHITE))
+                            .append(Component.text(killerName, NamedTextColor.RED))
+                            .append(Component.text("님이 ", NamedTextColor.WHITE))
+                            .append(Component.text("[", NamedTextColor.DARK_AQUA).decoration(TextDecoration.ITALIC, false))
+                            .append(weapon.itemMeta.customName()!!.color(NamedTextColor.DARK_AQUA).decoration(TextDecoration.ITALIC, false))
+                            .append(Component.text("]", NamedTextColor.DARK_AQUA).decoration(TextDecoration.ITALIC, false))
+                            .append(Component.text("를 이용하여 ", NamedTextColor.WHITE))
+                            .append(Component.text(victimTeamName ?: "알수없음", victimTeamColor))
+                            .append(Component.text("팀의 ", NamedTextColor.WHITE))
+                            .append(Component.text(victimName, NamedTextColor.AQUA))
+                            .append(Component.text(" 님을 처치했습니다!", NamedTextColor.WHITE))
+                    )
+                } else {
+                    // 서버 전체에 메시지 보내기
+                    victim.server.broadcast(
+                        Component.text(killerTeamName ?: "알수없음", killerTeamColor)
+                            .append(Component.text("팀의 ", NamedTextColor.GRAY))
+                            .append(Component.text(killerName, NamedTextColor.RED))
+                            .append(Component.text("님이 ", NamedTextColor.GRAY))
+                            .append(Component.text(victimTeamName ?: "알수없음", victimTeamColor))
+                            .append(Component.text("팀의 ", NamedTextColor.GRAY))
+                            .append(Component.text(victimName, NamedTextColor.AQUA))
+                            .append(Component.text(" 님을 처치했습니다!", NamedTextColor.GRAY))
+                    )
+                }
+            } else {
+                // 서버 전체에 메시지 보내기
+                victim.server.broadcast(
+                    Component.text(killerTeamName ?: "알수없음", killerTeamColor)
+                        .append(Component.text("팀의 ", NamedTextColor.GRAY))
+                        .append(Component.text(killerName, NamedTextColor.RED))
+                        .append(Component.text("님이 ", NamedTextColor.GRAY))
+                        .append(Component.text(victimTeamName ?: "알수없음", victimTeamColor))
+                        .append(Component.text("팀의 ", NamedTextColor.GRAY))
+                        .append(Component.text(victimName, NamedTextColor.AQUA))
+                        .append(Component.text(" 님을 처치했습니다!", NamedTextColor.GRAY))
+                )
+            }
 
             //move player's team
             killerTeam?.addEntries(victimName)
             victim.server.broadcast(
                 Component.text(victimName, NamedTextColor.AQUA)
-                    .append(Component.text("님은 지금부터 ", NamedTextColor.GRAY))
+                    .append(Component.text("님은 지금부터 ", NamedTextColor.WHITE))
                     .append(Component.text(killerTeamName ?: "알수없음", killerTeamColor))
-                    .append(Component.text("팀입니다!", NamedTextColor.GRAY))
+                    .append(Component.text("팀입니다!", NamedTextColor.WHITE))
             )
 
             event.deathMessage(null)

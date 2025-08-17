@@ -18,3 +18,7 @@ commands:
     usage: /doklib
   add_new_team:
     description: '팀 추가'
+  output_team_color:
+    description: '팀 색 추출 및 초기화'
+  set_death_count:
+    description: '데스 수 절대설정'

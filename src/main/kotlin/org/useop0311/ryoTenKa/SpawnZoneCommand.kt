@@ -86,7 +86,7 @@ class SpawnZoneCommand : CommandExecutor {
                             val replaceItem = ItemStack(Material.AIR)
                             player.inventory.setItemInMainHand(replaceItem)
                         } else {
-                            val replaceItem = ItemStack(Material.DIAMOND_BLOCK, heldItem.amount - 1)
+                            val replaceItem = ItemStack(Material.DIAMOND_BLOCK, heldItem.amount - 9)
                             player.inventory.setItemInMainHand(replaceItem)
                         }
 

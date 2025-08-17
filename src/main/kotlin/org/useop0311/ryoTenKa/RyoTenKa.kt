@@ -11,6 +11,8 @@ import org.bukkit.scoreboard.Team
 import java.io.*
 import java.time.LocalTime
 import java.util.*
+import javax.inject.Named
+import javax.print.attribute.standard.MediaSize
 
 
 class RyoTenKa : JavaPlugin() {
@@ -29,14 +31,17 @@ class RyoTenKa : JavaPlugin() {
     }
 
     private val deathF = File(dataFolder, "/deathData.txt")
+    private val colorF = File(dataFolder, "/teamColorData.txt")
 
     override fun onEnable() {
         // Plugin startup logic
         instance = this
 
         // dataFile
-        makeFile(deathF);
+        makeFile(deathF)
+        makeFile(colorF)
         fileToMap(deathF, deathCounter)
+        fileToColorList(colorF, unusedTeamColor)
 
         // Commands
         getCommand("start_game")?.setExecutor(SettingCommand())
@@ -44,13 +49,15 @@ class RyoTenKa : JavaPlugin() {
         getCommand("add_new_team")?.setExecutor(SettingCommand())
         getCommand("escape")?.setExecutor(SpawnZoneCommand())
         getCommand("doklib")?.setExecutor(SpawnZoneCommand())
+        getCommand("output_team_color")?.setExecutor(OtherCommand())
+        getCommand("set_death_count")?.setExecutor(OtherCommand())
 
         // EventHandle
         server.pluginManager.registerEvents(DeathEventListener(), this)
         server.pluginManager.registerEvents(OtherEventListener(), this)
 
         // Scheduler
-        mapToFileSchedule(deathF, deathCounter)
+        valsToFileSchedule(deathF, colorF, deathCounter, unusedTeamColor)
         spawnPVPSchedule()
         bigTeamSchedule()
 
@@ -60,6 +67,7 @@ class RyoTenKa : JavaPlugin() {
     override fun onDisable() {
         // Plugin shutdown logic
         mapToFile(deathF, deathCounter)
+        colorListToFile(colorF, unusedTeamColor)
         logger.info("RYO TENKA 비활성화됨")
     }
 
@@ -197,9 +205,10 @@ class RyoTenKa : JavaPlugin() {
     }
 
     @Suppress("deprecation")
-    fun mapToFileSchedule(f: File?, map: HashMap<UUID, Int>) {
+    fun valsToFileSchedule(mapF: File?, colorF: File?, map: HashMap<UUID, Int>, color: MutableList<NamedTextColor>) {
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, {
-            f?.let { mapToFile(it, map) }
+            mapF?.let { mapToFile(it, map) }
+            colorF?.let { colorListToFile(it, color) }
         }, 1200L, 1200L)
     }
 
@@ -232,4 +241,39 @@ class RyoTenKa : JavaPlugin() {
             e.printStackTrace()
         }
     }
+
+    fun fileToColorList(f: File, colorList: MutableList<NamedTextColor>) {
+        // 기존 리스트의 내용을 비워서 중복을 방지
+        colorList.clear()
+
+        if (!f.exists()) return
+
+        try {
+            f.bufferedReader().use { reader ->
+                reader.forEachLine { line ->
+                    // 문자열(색상 이름)을 NamedTextColor 객체로 변환
+                    val color = NamedTextColor.NAMES.value(line.lowercase())
+                    if (color != null) {
+                        // 외부에서 받은 리스트에 직접 추가
+                        colorList.add(color)
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun colorListToFile(f: File, colorList: List<NamedTextColor>) {
+        try {
+            val writer: FileWriter = FileWriter(f, false)
+            for (color in colorList) {
+                writer.write(NamedTextColor.NAMES.key(color) + "\n")
+            }
+            writer.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
 }
